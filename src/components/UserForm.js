@@ -31,57 +31,54 @@ export default function UserForm({ mode, editUser, onSubmit }) {
   }, [editUser]);
 
   return (
-    <div className="container">
-      <>
-        <form onSubmit={handleSubmit}>
+    <div>
+      <form onSubmit={handleSubmit}>
+        <div>
+          Name:{" "}
+          <input
+            type="text"
+            name="name"
+            value={user.name}
+            onChange={handleInputChange}
+          />
+        </div>
+        <br />
+        <div>
+          Email:{" "}
+          <input
+            type="text"
+            name="email"
+            value={user.email}
+            onChange={handleInputChange}
+          />
+        </div>
+        <br />
+        {mode === "add" && (
           <div>
-            Name:{" "}
+            Password:{" "}
             <input
               type="text"
-              name="name"
-              value={user.name}
+              name="password"
+              value={user.password}
               onChange={handleInputChange}
             />
           </div>
-          <br />
-          <div>
-            Email:{" "}
-            <input
-              type="text"
-              name="email"
-              value={user.email}
-              onChange={handleInputChange}
-            />
-          </div>
-          <br />
-          {mode === "add" && (
-            <div>
-              Password:{" "}
-              <input
-                type="text"
-                name="password"
-                value={user.password}
-                onChange={handleInputChange}
-              />
-            </div>
-          )}
-          <br />
-          <div>
-            Photo:{" "}
-            <input type="file" name="photo" onChange={handleFileChange} />
-            {editUser && <p>{editUser.profileImage.filename}</p>}
-          </div>
-          <br />
-          <div>
-            <input
-              className="btn btn-danger"
-              type="submit"
-              value={mode === "add" ? "Register" : "Update"}
-            />
-          </div>
-          <br />
-        </form>
-      </>
+        )}
+        <br />
+        <div>
+          Photo: <input type="file" name="photo" onChange={handleFileChange} />
+          {editUser && <p>{editUser.profileImage.filename}</p>}
+        </div>
+        <br />
+        <div>
+          <input
+            className="btn btn-danger"
+            type="submit"
+            value={mode === "add" ? "Register" : "Update"}
+          />
+        </div>
+        <br />
+      </form>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import io from "socket.io-client";
 import jwtDecode from "jwt-decode";
+import { findChat } from "@/pages/api/chatApi";
 
 export default function Chat() {
   const router = useRouter();
@@ -15,18 +16,16 @@ export default function Chat() {
   const receiverId = router.query.id ? router.query.id : null;
   const [message, setMessage] = useState("");
   const [socket, setSocket] = useState(null);
-  const [chatMessages, setChatMessages] = useState([]);
+  const [chat, setChat] = useState([]);
 
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await axios.get("http://localhost:9999/chats/findchat", {
-          params: { senderId, receiverId },
-        });
-        setChatMessages(res.data);
+        const chat = await findChat({senderId, receiverId});
+        setChat(chat);
       } catch (err) {
         console.error(err);
-        setChatMessages([]);
+        setChat([]);
       }
     };
     if (receiverId) {
@@ -45,13 +44,14 @@ export default function Chat() {
       return;
     }
     socket.on("message", (msg) => {
-      setChatMessages(msg);
+      setChat(msg);
     });
   }, [socket]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newMessage = {
+      chatId: chat._id,
       senderId,
       receiverId,
       message,
@@ -61,7 +61,7 @@ export default function Chat() {
   };
 
   return (
-    <>
+    <div className="container-fluid">
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -72,8 +72,8 @@ export default function Chat() {
       </form>
       <br />
       <hr />
-      {chatMessages.messages
-        ? chatMessages.messages.map((message) => (
+      {chat.messages && chat.messages.length !== 0
+        ? chat.messages.map((message) => (
             <div key={message._id} className="container">
               <h5>{message.message}</h5>
               <small>Sender: {message.sender.username} </small>
@@ -82,6 +82,6 @@ export default function Chat() {
             </div>
           ))
         : "No Messages"}
-    </>
+    </div>
   );
 }

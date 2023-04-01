@@ -24,7 +24,7 @@ export default function Login() {
     }
   };
   return (
-    <div className="container">
+    <div className="container-fluid">
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="email">Email: </label>{" "}

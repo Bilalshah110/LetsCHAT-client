@@ -17,7 +17,7 @@ export default function Signup() {
   };
 
   return (
-    <div>
+    <div className="container-fluid">
       <UserForm mode="add" onSubmit={handleSignup} />
     </div>
   );

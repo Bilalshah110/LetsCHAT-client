@@ -41,7 +41,7 @@ export default function EditUser() {
   };
 
   return (
-    <div>
+    <div className="container-fluid">
       <UserForm mode="edit" editUser={user} onSubmit={handleUpdate} />
     </div>
   );

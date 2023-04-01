@@ -1,56 +1,77 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
 import { useRouter } from "next/router";
-import { Row, Col } from "react-bootstrap";
-import UserCard from "./UserCard";
+import { useState, useEffect } from "react";
+import { getAllUsers, deleteUser } from "../pages/api/userApi";
 
-export default function AllUsers() {
+export default function Home() {
   const router = useRouter();
-  let token = "";
-  if (typeof window !== "undefined") {
-    token = `bearer ${localStorage.getItem("token")}`;
-  }
-
-  const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
 
-  useEffect(
-    () => async () => {
-      await axios
-        .get("http://localhost:9999/user", {
-          headers: {
-            Authorization: token,
-          },
-        })
-        .then((res) => {
-          setUsers(res.data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
-          router.push("/login");
-          setLoading(false);
-        });
-    },
-    []
-  );
+  const handleMessage = ({ _id }) => {
+    router.push(`/chat/${_id}`);
+  };
+
+  const handleDelete = async (user) => {
+    try {
+      await deleteUser(user._id);
+      fetchData();
+      alert(`${user.name} deleted successfully`);
+    } catch (err) {
+      console.error(err);
+      alert(`Failed to delete ${user.name}`);
+    }
+  };
+
+  const handleEdit = ({ _id }) => {
+    router.push(`/edituser/${_id}`);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const usersdata = await getAllUsers();
+      setUsers(usersdata);
+    } catch (err) {
+      console.error(err);
+      if (err.response && err.response.status === (401 || 403)) {
+        router.push("/login");
+      }
+    }
+  };
 
   return (
-    <>
-      {loading ? (
-        "Loading..."
-      ) : (
-        <Row>
-          {users
-            ? users.map((user) => (
-                <Col key={user._id} className="mb-4" lg={3} md={6}>
-                  <UserCard user={user} />
-                  <br />
-                </Col>
-              ))
-            : "No Users"}
-        </Row>
-      )}
-    </>
+    <div className="container-fluid">
+      {users
+        ? users.map((user) => (
+            <div key={user._id}>
+              <img
+                width="80"
+                src={`http://localhost:9999/${user.profileImage.path}`}
+                alt={user.name}
+              />
+              <h3>{user.name} </h3>
+              <input
+                type="button"
+                onClick={() => handleMessage(user)}
+                value="Send message"
+              />
+              <input
+                type="button"
+                onClick={() => handleDelete(user)}
+                value="Delete User"
+              />
+              <input
+                type="button"
+                onClick={() => handleEdit(user)}
+                value="Edit User"
+              />
+              <br />
+              <hr />
+            </div>
+          ))
+        : "No users"}
+    </div>
   );
 }

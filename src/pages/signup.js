@@ -3,7 +3,7 @@ import Signup from "../components/Signup";
 export default function SignupPage() {
  
   return (
-    <div className="container">
+    <div>
       <h1>Signup page</h1>
       <p>This is Signup page</p>
       <br />
